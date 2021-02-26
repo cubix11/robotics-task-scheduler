@@ -10,10 +10,11 @@ const string_encode_decode_1 = require("string-encode-decode");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("../dotenv"));
+const functions_1 = require("../functions");
 const router = express_1.Router();
 function getToken(username, res, next) {
     jsonwebtoken_1.default.sign({ username }, dotenv_1.default.SECRET_TOKEN, {
-        expiresIn: 15
+        expiresIn: '5m'
     }, (err, token) => {
         if (err) {
             return next(new Error('Sorry, something went to wrong'));
@@ -69,5 +70,11 @@ router.post('/login', async (req, res, next) => {
         next(new Error('Password is incorrect'));
     }
     ;
+});
+router.patch('/update', functions_1.checkUser, (req, res, next) => {
+    const username = req.username;
+    const updates = req.body;
+    const password = req.body.password;
+    delete updates.password;
 });
 exports.default = router;

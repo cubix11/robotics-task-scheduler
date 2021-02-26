@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { UserInput } from '../types';
+import { Updates, UserInput } from '../types';
 import { schemaSignup, loginSchema } from '../schema';
 import Joi from 'joi';
 import User from '../models/User';
@@ -7,6 +7,7 @@ import { encode } from 'string-encode-decode';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import env from '../dotenv';
+import { checkUser } from '../functions';
 
 const router: Router = Router();
 
@@ -15,7 +16,7 @@ function getToken(username: string, res: Response, next: NextFunction): void {
         { username },
         env.SECRET_TOKEN!,
         {
-            expiresIn: 15
+            expiresIn: '5m'
         },
         (err: Error | null, token: string | undefined): void => {
             if(err) {
@@ -67,6 +68,14 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction): P
         res.statusCode = 403;
         next(new Error('Password is incorrect'));
     };
+});
+
+router.patch('/update', checkUser, (req: Request, res: Response, next: NextFunction): void => {
+    const username: string = req.username;
+    const updates: Updates = req.body;
+    const password = req.body.password;
+    delete updates.password;
+    
 });
 
 export default router;

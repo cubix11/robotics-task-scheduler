@@ -1,3 +1,4 @@
+import { string } from 'joi';
 import { Document } from 'mongoose';
 
 export interface UserSchema extends Document {
@@ -17,3 +18,10 @@ export interface ResponseError {
     message: string;
     stack?: string;
 }
+
+export interface Updates {
+    username?: string;
+    password?: string;
+    email?: string;
+    newPassword?: string;
+};
