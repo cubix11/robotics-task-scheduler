@@ -29,6 +29,10 @@ const User = new mongoose_1.Schema({
         type: String,
         required: true
     },
+    email: {
+        type: String,
+        required: true
+    },
     roomid: {
         type: mongoose_1.Schema.Types.Mixed
     }

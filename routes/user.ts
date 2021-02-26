@@ -5,8 +5,26 @@ import Joi from 'joi';
 import User from '../models/User';
 import { encode } from 'string-encode-decode';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import env from '../dotenv';
 
 const router: Router = Router();
+
+function getToken(username: string, res: Response, next: NextFunction): void {
+    jwt.sign(
+        { username },
+        env.SECRET_TOKEN,
+        {
+            expiresIn: 15
+        },
+        (err: Error, token: string): void => {
+            if(err) {
+                return next(new Error('Sorry, something went to wrong'));
+            };
+            res.json({ token });
+        }
+    );
+};
 
 router.post('/signup', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const userinput: UserInput = req.body;
@@ -19,14 +37,14 @@ router.post('/signup', async (req: Request, res: Response, next: NextFunction): 
         res.statusCode = 409;
         return next(new Error('Already user with that username'));
     };
+    getToken(userinput.username, res, next);
     const hashedPassword = await bcrypt.hash(userinput.password, 15);
     const user = new User({
         username: userinput.username,
-        email: userinput.email,
+        email: encode(userinput.email),
         password: hashedPassword
     });
-    const insertedUser = await user.save();
-    res.status(201).json(insertedUser);
+    user.save();
 });
 
 export default router;

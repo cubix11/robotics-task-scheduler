@@ -10,6 +10,10 @@ const User: Schema = new Schema({
         type: String,
         required: true
     },
+    email: {
+        type: String,
+        required: true
+    },
     roomid: {
         type: Schema.Types.Mixed
     }
