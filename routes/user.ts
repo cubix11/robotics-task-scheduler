@@ -70,12 +70,12 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction): P
     };
 });
 
-router.patch('/update', checkUser, (req: Request, res: Response, next: NextFunction): void => {
+router.patch('/update', checkUser, async (req: Request, res: Response, next: NextFunction): void => {
     const username: string = req.username;
     const updates: Updates = req.body;
     const password = req.body.password;
     delete updates.password;
-    
+    const user = await User.findOne({ username });
 });
 
 export default router;
