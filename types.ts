@@ -3,6 +3,7 @@ import { Document } from 'mongoose';
 export interface UserSchema extends Document {
     username: string;
     password: string;
+    email: string;
     roomid: string | null;
 };
 
