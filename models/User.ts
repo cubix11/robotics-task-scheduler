@@ -11,8 +11,7 @@ const User: Schema = new Schema({
         required: true
     },
     roomid: {
-        type: Schema.Types.Mixed,
-        required: true
+        type: Schema.Types.Mixed
     }
 });
 
