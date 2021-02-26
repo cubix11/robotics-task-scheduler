@@ -60,5 +60,14 @@ router.post('/login', async (req, res, next) => {
     }
     ;
     const password = dbUser.password;
+    const correct = await bcrypt_1.default.compare(user.password, password);
+    if (correct) {
+        getToken(user.username, res, next);
+    }
+    else {
+        res.statusCode = 403;
+        next(new Error('Password is incorrect'));
+    }
+    ;
 });
 exports.default = router;

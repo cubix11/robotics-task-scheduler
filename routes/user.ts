@@ -60,6 +60,13 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction): P
         return next(new Error('No user with username'));
     };
     const password: string = dbUser.password;
+    const correct: boolean = await bcrypt.compare(user.password, password);
+    if(correct) {
+        getToken(user.username, res, next);
+    } else {
+        res.statusCode = 403;
+        next(new Error('Password is incorrect'));
+    };
 });
 
 export default router;
