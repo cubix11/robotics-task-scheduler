@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import db from './db';
 import router from './routes/user';
 import { ResponseError } from './types';
@@ -9,7 +9,7 @@ const PORT: number | string = process.env.PORT || 3000;
 app.use(express.json());
 app.use('/user', router)
 
-function errorHandler(error: Error, req: Request, res: Response) {
+function errorHandler(error: Error, req: Request, res: Response, next: NextFunction) {
     res.statusCode = res.statusCode === 200 ? 500 : res.statusCode;
     const response: ResponseError = {
         message: error.message
