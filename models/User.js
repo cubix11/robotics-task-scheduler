@@ -30,8 +30,7 @@ const User = new mongoose_1.Schema({
         required: true
     },
     roomid: {
-        type: mongoose_1.Schema.Types.Mixed,
-        required: true
+        type: mongoose_1.Schema.Types.Mixed
     }
 });
 exports.default = mongoose_1.default.model('User', User, 'users');

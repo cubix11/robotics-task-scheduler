@@ -9,5 +9,6 @@ const user_1 = __importDefault(require("./routes/user"));
 db_1.default;
 const app = express_1.default();
 const PORT = process.env.PORT || 3000;
-app.use(user_1.default);
+app.use(express_1.default.json());
+app.use('/user', user_1.default);
 app.listen(PORT, () => console.log('Listening on port', PORT));

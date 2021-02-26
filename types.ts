@@ -5,3 +5,8 @@ export interface UserSchema extends Document {
     password: string;
     roomid: string | null;
 };
+
+export interface UserInput {
+    username: string;
+    password: string;
+}
