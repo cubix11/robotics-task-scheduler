@@ -9,4 +9,10 @@ export interface UserSchema extends Document {
 export interface UserInput {
     username: string;
     password: string;
+    email: string;
+}
+
+export interface ResponseError {
+    message: string;
+    stack?: string;
 }
