@@ -13,11 +13,11 @@ const router: Router = Router();
 function getToken(username: string, res: Response, next: NextFunction): void {
     jwt.sign(
         { username },
-        env.SECRET_TOKEN,
+        env.SECRET_TOKEN!,
         {
             expiresIn: 15
         },
-        (err: Error, token: string): void => {
+        (err: Error | null, token: string | undefined): void => {
             if(err) {
                 return next(new Error('Sorry, something went to wrong'));
             };
@@ -45,6 +45,21 @@ router.post('/signup', async (req: Request, res: Response, next: NextFunction): 
         password: hashedPassword
     });
     user.save();
+});
+
+router.post('/login', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const user: UserInput = req.body;
+    const valid = loginSchema.validate(user);
+    if(valid.error) {
+        res.statusCode = 400;
+        return next(new Error(valid.error.details[0].message));
+    };
+    const dbUser = await User.findOne({ username: user.username })
+    if(!dbUser) {
+        res.statusCode = 404;
+        return next(new Error('No user with username'));
+    };
+    const password: string = dbUser.password;
 });
 
 export default router;

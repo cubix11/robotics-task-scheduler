@@ -45,4 +45,20 @@ router.post('/signup', async (req, res, next) => {
     });
     user.save();
 });
+router.post('/login', async (req, res, next) => {
+    const user = req.body;
+    const valid = schema_1.loginSchema.validate(user);
+    if (valid.error) {
+        res.statusCode = 400;
+        return next(new Error(valid.error.details[0].message));
+    }
+    ;
+    const dbUser = await User_1.default.findOne({ username: user.username });
+    if (!dbUser) {
+        res.statusCode = 404;
+        return next(new Error('No user with username'));
+    }
+    ;
+    const password = dbUser.password;
+});
 exports.default = router;
