@@ -5,7 +5,7 @@ import Joi from 'joi';
 
 const router: Router = Router();
 
-router.get('/signup', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+router.post('/signup', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const user: UserInput = req.body;
     const valid: Joi.ValidationResult = schemaSignup.validate(user);
     if(valid.error) {

@@ -8,6 +8,7 @@ const PORT: number | string = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use('/user', router)
+app.use(errorHandler);
 
 function errorHandler(error: Error, req: Request, res: Response, next: NextFunction) {
     res.statusCode = res.statusCode === 200 ? 500 : res.statusCode;
