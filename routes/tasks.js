@@ -4,29 +4,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const Task_1 = __importDefault(require("../models/Task"));
 const schema_1 = require("../schema");
-const Room_1 = __importDefault(require("../models/Room"));
 const router = express_1.Router();
 router.post('/create', async (req, res, next) => {
-    const name = req.body.name;
-    const valid = schema_1.roomName.validate({ name });
+    const task = req.body;
+    const valid = schema_1.taskSchema.validate(task);
     if (valid.error) {
         res.statusCode = 400;
         return next(new Error(valid.error.details[0].message));
     }
     ;
-    const user = await (new Room_1.default({ name })).save();
-    res.statusCode = 201;
-    res.json({ id: user._id });
-});
-router.delete('/delete', async (req, res, next) => {
-    const id = req.body.id;
-    if (!(await Room_1.default.findById(id))) {
-        res.statusCode = 404;
-        return next(new Error('Room id not found'));
-    }
-    ;
-    await Room_1.default.findByIdAndDelete(id);
+    await (new Task_1.default({
+        name: task.name,
+        roomid: task.roomid
+    })).save();
     res.status(204).end();
 });
+//router.patch('/edit', (req: Request, res: Response, next: NextFunction): Promise<void> => {})
 exports.default = router;

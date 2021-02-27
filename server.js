@@ -7,12 +7,14 @@ const express_1 = __importDefault(require("express"));
 const db_1 = __importDefault(require("./db"));
 const user_1 = __importDefault(require("./routes/user"));
 const room_1 = __importDefault(require("./routes/room"));
+const tasks_1 = __importDefault(require("./routes/tasks"));
 db_1.default;
 const app = express_1.default();
 const PORT = process.env.PORT || 3000;
 app.use(express_1.default.json());
 app.use('/user', user_1.default);
 app.use('/room', room_1.default);
+app.use('/task', tasks_1.default);
 app.use(errorHandler);
 function errorHandler(error, req, res, next) {
     res.statusCode = res.statusCode === 200 ? 500 : res.statusCode;

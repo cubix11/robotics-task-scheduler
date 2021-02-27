@@ -14,7 +14,7 @@ router.post('/create', async (req: Request, res: Response, next: NextFunction): 
         return next(new Error(valid.error.details[0].message));
     };
     const user = await (new Room({ name })).save();
-    res.statusCode = 202;
+    res.statusCode = 201;
     res.json({ id: user._id });
 });
 
