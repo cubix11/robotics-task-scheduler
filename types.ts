@@ -36,3 +36,7 @@ export interface SendEmailOptions {
     text: string;
     html: string;
 };
+
+export interface RoomSchema extends Document {
+    name: string;
+};

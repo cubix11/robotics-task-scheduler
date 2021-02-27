@@ -1,13 +1,15 @@
 import express, { Request, Response, NextFunction } from 'express';
 import db from './db';
-import router from './routes/user';
+import userRoutes from './routes/user';
+import roomRoutes from './routes/room';
 import { ResponseError } from './types';
 db;
 const app: express.Application = express();
 const PORT: number | string = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use('/user', router)
+app.use('/user', userRoutes);
+app.use('/room', roomRoutes);
 app.use(errorHandler);
 
 function errorHandler(error: Error, req: Request, res: Response, next: NextFunction) {
