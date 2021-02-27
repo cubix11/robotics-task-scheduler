@@ -21,4 +21,5 @@ router.post('/create', async (req, res, next) => {
     })).save();
     res.status(204).end();
 });
+//router.patch('/edit', (req: Request, res: Response, next: NextFunction): Promise<void> => {})
 exports.default = router;

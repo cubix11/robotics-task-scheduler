@@ -22,4 +22,6 @@ router.post('/create', async (req: Request, res: Response, next: NextFunction): 
     res.status(204).end();
 });
 
+//router.patch('/edit', (req: Request, res: Response, next: NextFunction): Promise<void> => {})
+
 export default router;
