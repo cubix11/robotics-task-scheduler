@@ -106,7 +106,7 @@ router.post('/forgot', async (req, res, next) => {
     }
     ;
     const html = `Go to this <a href="${URL}/user/reset?username=${string_encode_decode_1.encode(username)}">link</a> to reset password`;
-    // sendMail(decode(user.email), 'Password Reset');
+    functions_1.sendMail(string_encode_decode_1.decode(user.email), 'Password Reset', html);
 });
 router.post('/reset', async (req, res, next) => {
     const username = string_encode_decode_1.decode(req.query.username);
