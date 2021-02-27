@@ -7,7 +7,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("./dotenv"));
 mongoose_1.default.connect(dotenv_1.default.MONGO_URI, {
     useCreateIndex: true,
-    useFindAndModify: true,
+    useFindAndModify: false,
     useNewUrlParser: true,
     useUnifiedTopology: true
 }, (err) => console.log(err || 'Connected!'));

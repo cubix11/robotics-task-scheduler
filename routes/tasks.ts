@@ -22,6 +22,28 @@ router.post('/create', async (req: Request, res: Response, next: NextFunction): 
     res.status(204).end();
 });
 
-//router.patch('/edit', (req: Request, res: Response, next: NextFunction): Promise<void> => {})
+router.patch('/edit', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const id: string = req.body.id;
+    const newName: string = req.body.name;
+    const valid: Joi.ValidationResult = taskSchema.validate({ roomid: id, name: newName });
+    if(valid.error) {
+        res.statusCode = 400;
+        return next(new Error(valid.error.details[0].message));
+    };
+    await Task.findByIdAndUpdate(id, { name: newName });
+    res.status(204).end();
+})
+
+router.delete('/delete', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const id = req.body.id;
+    console.log(id)
+    const valid: Joi.ValidationResult = taskSchema.validate({ roomid: id, name: 'test' });
+    if(valid.error) {
+        res.statusCode = 400;
+        return next(new Error(valid.error.details[0].message));
+    };
+    await Task.findByIdAndDelete(id);
+    res.status(204).end();
+});
 
 export default router;
