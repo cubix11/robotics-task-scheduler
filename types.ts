@@ -25,3 +25,14 @@ export interface Updates {
     email?: string;
     newPassword?: string;
 };
+
+export interface SendEmailOptions {
+    to: string;
+    from: {
+        email: string;
+        name: string;
+    };
+    subject: string;
+    text: string;
+    html: string;
+};

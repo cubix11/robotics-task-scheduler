@@ -13,6 +13,7 @@ const dotenv_1 = __importDefault(require("../dotenv"));
 const functions_1 = require("../functions");
 const router = express_1.Router();
 const SALT_ROUNDS = parseInt(dotenv_1.default.SALT_ROUNDS);
+const URL = process.env.NODE_ENV ? '' : 'http://localhost:3000';
 function getToken(username, res, next) {
     jsonwebtoken_1.default.sign({ username }, dotenv_1.default.SECRET_TOKEN, {
         expiresIn: '1h'
@@ -90,5 +91,29 @@ router.delete('/delete', functions_1.checkUser, async (req, res, next) => {
         res.status(204).end();
     }
     ;
+});
+router.post('/forgot', async (req, res, next) => {
+    const username = req.body.username;
+    const user = await User_1.default.findOne({ username });
+    if (!user) {
+        res.statusCode = 404;
+        return next(new Error('User not found'));
+    }
+    ;
+    const html = `Go to this <a href="${URL}/user/reset?username=${string_encode_decode_1.encode(username)}">link</a> to reset password`;
+    // sendMail(decode(user.email), 'Password Reset');
+});
+router.post('/reset', async (req, res, next) => {
+    const username = string_encode_decode_1.decode(req.query.username);
+    const password = req.body.password;
+    const user = await User_1.default.findOne({ username });
+    if (!user) {
+        res.statusCode = 404;
+        return next(new Error('User not found'));
+    }
+    ;
+    const hashedPassword = await bcrypt_1.default.hash(password, SALT_ROUNDS);
+    await User_1.default.updateOne({ username }, { password: hashedPassword });
+    res.status(204).end();
 });
 exports.default = router;

@@ -3,12 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkPassword = exports.checkUser = void 0;
+exports.sendMail = exports.checkPassword = exports.checkUser = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("./dotenv"));
 const User_1 = __importDefault(require("./models/User"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const schema_1 = require("./schema");
+const mail_1 = __importDefault(require("@sendgrid/mail"));
+const API_KEY = (process.env.NODE_ENV ? process.env.API_PROD : process.env.API_DEV);
+mail_1.default.setApiKey(API_KEY);
 function checkUser(req, res, next) {
     let token = req.get('Authorization');
     if (token) {
@@ -48,9 +51,7 @@ async function checkPassword(username, password, res, next) {
     }
     ;
     const dbPassword = dbUser.password;
-    console.log(password);
     const correct = await bcrypt_1.default.compare(password, dbPassword);
-    console.log(correct);
     if (!correct) {
         res.statusCode = 403;
         next(new Error('Password is incorrect'));
@@ -62,4 +63,19 @@ async function checkPassword(username, password, res, next) {
     ;
 }
 exports.checkPassword = checkPassword;
+;
+function sendMail(to, subject, text) {
+    const emailOptions = {
+        to,
+        from: {
+            email: 'karmakarfamily216php@gmail.com',
+            name: 'Robotics Task Scheduler'
+        },
+        subject,
+        text,
+        html: text
+    };
+    mail_1.default.send(emailOptions);
+}
+exports.sendMail = sendMail;
 ;

@@ -5,6 +5,11 @@ import User from './models/User';
 import bcrypt from 'bcrypt';
 import { loginSchema } from './schema';
 import Joi from 'joi';
+import { SendEmailOptions } from './types';
+import sendgrid from '@sendgrid/mail';
+
+const API_KEY: string = (process.env.NODE_ENV ? process.env.API_PROD : process.env.API_DEV)!;
+sendgrid.setApiKey(API_KEY);
 
 export function checkUser(req: Request, res: Response, next: NextFunction): void {
     let token = req.get('Authorization');
@@ -39,9 +44,7 @@ export async function checkPassword(username: string, password: string, res: Res
         return false;
     };
     const dbPassword: string = dbUser.password;
-    console.log(password)
     const correct: boolean = await bcrypt.compare(password, dbPassword);
-    console.log(correct)
     if(!correct) {
         res.statusCode = 403;
         next(new Error('Password is incorrect'));
@@ -49,4 +52,18 @@ export async function checkPassword(username: string, password: string, res: Res
     } else {
         return true;
     };
+};
+
+export function sendMail(to: string, subject: string, text: string) {
+    const emailOptions: SendEmailOptions = {
+        to,
+        from: {
+            email: 'karmakarfamily216php@gmail.com',
+            name: 'Robotics Task Scheduler'
+        },
+        subject,
+        text,
+        html: text
+    };
+    sendgrid.send(emailOptions);
 };
