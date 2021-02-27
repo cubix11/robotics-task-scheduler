@@ -90,7 +90,7 @@ router.delete('/delete', checkUser, async (req: Request, res: Response, next: Ne
 
 router.post('/room/join', checkUser, async (req: Request, res: Response): Promise<void> => {
     const username: string = req.username;
-    await User.updateOne({ username }, { roomid: req.body.id });
+    await User.updateOne({ username }, { roomid: req.query.id });
     res.status(204).end();
 });
 

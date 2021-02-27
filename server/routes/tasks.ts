@@ -23,7 +23,7 @@ router.post('/create', async (req: Request, res: Response, next: NextFunction): 
 });
 
 router.patch('/edit', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const id: string = req.body.id;
+    const id: string = req.query.id;
     const newName: string = req.body.name;
     const valid: Joi.ValidationResult = taskSchema.validate({ roomid: id, name: newName });
     if(valid.error) {
@@ -35,7 +35,7 @@ router.patch('/edit', async (req: Request, res: Response, next: NextFunction): P
 })
 
 router.delete('/delete', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const id = req.body.id;
+    const id = req.query.id;
     console.log(id)
     const valid: Joi.ValidationResult = taskSchema.validate({ roomid: id, name: 'test' });
     if(valid.error) {

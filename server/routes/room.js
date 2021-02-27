@@ -22,7 +22,7 @@ router.post('/create', async (req, res, next) => {
     res.json({ id: user._id });
 });
 router.delete('/delete', async (req, res, next) => {
-    const id = req.body.id;
+    const id = req.query.id;
     if (!(await Room_1.default.findById(id))) {
         res.statusCode = 404;
         return next(new Error('Room id not found'));

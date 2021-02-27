@@ -22,7 +22,7 @@ router.post('/create', async (req, res, next) => {
     res.status(204).end();
 });
 router.patch('/edit', async (req, res, next) => {
-    const id = req.body.id;
+    const id = req.query.id;
     const newName = req.body.name;
     const valid = schema_1.taskSchema.validate({ roomid: id, name: newName });
     if (valid.error) {
@@ -34,7 +34,7 @@ router.patch('/edit', async (req, res, next) => {
     res.status(204).end();
 });
 router.delete('/delete', async (req, res, next) => {
-    const id = req.body.id;
+    const id = req.query.id;
     console.log(id);
     const valid = schema_1.taskSchema.validate({ roomid: id, name: 'test' });
     if (valid.error) {
