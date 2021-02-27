@@ -12,9 +12,11 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("../dotenv"));
 const functions_1 = require("../functions");
 const router = express_1.Router();
+const SALT_ROUNDS = parseInt(dotenv_1.default.SALT_ROUNDS);
+console.log(SALT_ROUNDS);
 function getToken(username, res, next) {
     jsonwebtoken_1.default.sign({ username }, dotenv_1.default.SECRET_TOKEN, {
-        expiresIn: '5m'
+        expiresIn: '1h'
     }, (err, token) => {
         if (err) {
             return next(new Error('Sorry, something went to wrong'));
@@ -38,13 +40,13 @@ router.post('/signup', async (req, res, next) => {
     }
     ;
     getToken(userinput.username, res, next);
-    const hashedPassword = await bcrypt_1.default.hash(userinput.password, 15);
+    const hashedPassword = await bcrypt_1.default.hash(userinput.password, SALT_ROUNDS);
     const user = new User_1.default({
         username: userinput.username,
         email: string_encode_decode_1.encode(userinput.email),
         password: hashedPassword
     });
-    user.save();
+    await user.save();
 });
 router.post('/login', async (req, res, next) => {
     const user = req.body;
@@ -76,6 +78,12 @@ router.patch('/update', functions_1.checkUser, async (req, res, next) => {
     const updates = req.body;
     const password = req.body.password;
     delete updates.password;
+    const valid = schema_1.loginSchema.validate({ username, password });
+    if (valid.error) {
+        res.statusCode = 400;
+        return next(new Error(valid.error.details[0].message));
+    }
+    ;
     const user = await User_1.default.findOne({ username });
     if (!user) {
         res.statusCode = 404;
@@ -83,7 +91,23 @@ router.patch('/update', functions_1.checkUser, async (req, res, next) => {
     }
     ;
     if (await bcrypt_1.default.compare(password, user.password)) {
-        //
+        if (updates.newPassword) {
+            updates.password = await bcrypt_1.default.hash(updates.newPassword, SALT_ROUNDS);
+            delete updates.newPassword;
+        }
+        ;
+        if (updates.email)
+            updates.email = string_encode_decode_1.encode(updates.email);
+        if (updates.username) {
+            res.statusCode = 202;
+            getToken(updates.username, res, next);
+        }
+        else {
+            res.statusCode = 204;
+            res.end();
+        }
+        ;
+        await User_1.default.updateOne({ username: username }, updates);
     }
     else {
         res.statusCode = 403;

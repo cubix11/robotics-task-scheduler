@@ -17,8 +17,8 @@ function checkUser(req, res, next) {
                 return;
             }
             ;
-            console.log(token);
             req.username = token.username;
+            next();
         });
     }
     else {

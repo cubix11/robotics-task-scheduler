@@ -12,8 +12,8 @@ export function checkUser(req: Request, res: Response, next: NextFunction): void
                 res.status(401).json({ error: error.message });
                 return;
             };
-            console.log(token);
             req.username = token!.username;
+            next()
         });
     } else {
         const error: Error = new Error('Unauthorized');

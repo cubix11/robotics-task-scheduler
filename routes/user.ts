@@ -10,13 +10,15 @@ import env from '../dotenv';
 import { checkUser } from '../functions';
 
 const router: Router = Router();
+const SALT_ROUNDS: number = parseInt(env.SALT_ROUNDS!);
+console.log(SALT_ROUNDS)
 
 function getToken(username: string, res: Response, next: NextFunction): void {
     jwt.sign(
         { username },
         env.SECRET_TOKEN!,
         {
-            expiresIn: '5m'
+            expiresIn: '1h'
         },
         (err: Error | null, token: string | undefined): void => {
             if(err) {
@@ -39,13 +41,13 @@ router.post('/signup', async (req: Request, res: Response, next: NextFunction): 
         return next(new Error('Already user with that username'));
     };
     getToken(userinput.username, res, next);
-    const hashedPassword = await bcrypt.hash(userinput.password, 15);
+    const hashedPassword = await bcrypt.hash(userinput.password, SALT_ROUNDS);
     const user = new User({
         username: userinput.username,
         email: encode(userinput.email),
         password: hashedPassword
     });
-    user.save();
+    await user.save();
 });
 
 router.post('/login', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -75,13 +77,30 @@ router.patch('/update', checkUser, async (req: Request, res: Response, next: Nex
     const updates: Updates = req.body;
     const password = req.body.password;
     delete updates.password;
+    const valid: Joi.ValidationResult = loginSchema.validate({ username, password });
+    if(valid.error) {
+        res.statusCode = 400;
+        return next(new Error(valid.error.details[0].message));
+    };
     const user = await User.findOne({ username });
     if(!user) {
         res.statusCode = 404;
         return next(new Error('Username not found'));
     };
     if(await bcrypt.compare(password, user.password)) {
-        //
+        if(updates.newPassword) {
+            updates.password = await bcrypt.hash(updates.newPassword, SALT_ROUNDS);
+            delete updates.newPassword;
+        };
+        if(updates.email) updates.email = encode(updates.email);
+        if(updates.username) {
+            res.statusCode = 202;
+            getToken(updates.username, res, next);
+        } else {
+            res.statusCode = 204;
+            res.end();
+        };
+        await User.updateOne({ username: username }, updates);
     } else {
         res.statusCode = 403;
         return next(new Error('Password is incorrect'));
