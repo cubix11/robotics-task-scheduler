@@ -21,5 +21,28 @@ router.post('/create', async (req, res, next) => {
     })).save();
     res.status(204).end();
 });
-//router.patch('/edit', (req: Request, res: Response, next: NextFunction): Promise<void> => {})
+router.patch('/edit', async (req, res, next) => {
+    const id = req.body.id;
+    const newName = req.body.name;
+    const valid = schema_1.taskSchema.validate({ roomid: id, name: newName });
+    if (valid.error) {
+        res.statusCode = 400;
+        return next(new Error(valid.error.details[0].message));
+    }
+    ;
+    await Task_1.default.findByIdAndUpdate(id, { name: newName });
+    res.status(204).end();
+});
+router.delete('/delete', async (req, res, next) => {
+    const id = req.body.id;
+    console.log(id);
+    const valid = schema_1.taskSchema.validate({ roomid: id, name: 'test' });
+    if (valid.error) {
+        res.statusCode = 400;
+        return next(new Error(valid.error.details[0].message));
+    }
+    ;
+    await Task_1.default.findByIdAndDelete(id);
+    res.status(204).end();
+});
 exports.default = router;
