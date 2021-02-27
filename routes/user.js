@@ -92,6 +92,11 @@ router.delete('/delete', functions_1.checkUser, async (req, res, next) => {
     }
     ;
 });
+router.post('/room/join', functions_1.checkUser, async (req, res) => {
+    const username = req.username;
+    await User_1.default.updateOne({ username }, { roomid: req.body.id });
+    res.status(204).end();
+});
 router.post('/forgot', async (req, res, next) => {
     const username = req.body.username;
     const user = await User_1.default.findOne({ username });

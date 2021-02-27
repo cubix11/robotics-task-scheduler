@@ -88,6 +88,12 @@ router.delete('/delete', checkUser, async (req: Request, res: Response, next: Ne
     };
 });
 
+router.post('/room/join', checkUser, async (req: Request, res: Response): Promise<void> => {
+    const username: string = req.username;
+    await User.updateOne({ username }, { roomid: req.body.id });
+    res.status(204).end();
+});
+
 router.post('/forgot', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const username: string = req.body.username;
     const user = await User.findOne({ username });
