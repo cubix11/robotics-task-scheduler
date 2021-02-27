@@ -102,10 +102,10 @@ router.post('/forgot', async (req: Request, res: Response, next: NextFunction): 
         return next(new Error('User not found'));
     };
     const html = `Go to this <a href="${URL}/user/reset?username=${encode(username)}">link</a> to reset password`;
-    // sendMail(decode(user.email), 'Password Reset');
+    sendMail(decode(user.email), 'Password Reset', html);
 });
 
-router.post('/reset', async (req: Request, res: Response, next: NextFunction): void => {
+router.post('/reset', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const username = decode(req.query.username);
     const password = req.body.password;
     const user = await User.findOne({ username });
