@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const schema_1 = require("../schema");
 const Room_1 = __importDefault(require("../models/Room"));
+const User_1 = __importDefault(require("../models/User"));
+const Task_1 = __importDefault(require("../models/Task"));
 const router = express_1.Router();
 router.post('/create', async (req, res, next) => {
     const name = req.body.name;
@@ -28,5 +30,11 @@ router.delete('/delete', async (req, res, next) => {
     ;
     await Room_1.default.findByIdAndDelete(id);
     res.status(204).end();
+});
+router.get('/data', async (req, res) => {
+    const roomid = req.query.id;
+    const users = (await User_1.default.find({ roomid })).map(user => user.username);
+    const tasks = (await Task_1.default.find({ roomid })).map(room => room.name);
+    res.json({ users, tasks });
 });
 exports.default = router;

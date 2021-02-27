@@ -1,8 +1,9 @@
-import e, { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 import { roomName } from '../schema';
 import Room from '../models/Room';
 import User from '../models/User';
+import Task from '../models/Task';
 
 const router: Router = Router();
 
@@ -26,6 +27,13 @@ router.delete('/delete', async (req: Request, res: Response, next: NextFunction)
     };
     await Room.findByIdAndDelete(id);
     res.status(204).end();
+});
+
+router.get('/data', async (req: Request, res: Response): Promise<void> => {
+    const roomid: string = req.query.id;
+    const users = (await User.find({ roomid })).map(user => user.username);
+    const tasks = (await Task.find({ roomid })).map(room => room.name);
+    res.json({ users, tasks });
 });
 
 export default router;
