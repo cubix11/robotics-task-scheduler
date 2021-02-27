@@ -7,11 +7,10 @@ import { encode } from 'string-encode-decode';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import env from '../dotenv';
-import { checkUser } from '../functions';
+import { checkUser, checkPassword } from '../functions';
 
 const router: Router = Router();
 const SALT_ROUNDS: number = parseInt(env.SALT_ROUNDS!);
-console.log(SALT_ROUNDS)
 
 function getToken(username: string, res: Response, next: NextFunction): void {
     jwt.sign(
@@ -31,11 +30,6 @@ function getToken(username: string, res: Response, next: NextFunction): void {
 
 router.post('/signup', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const userinput: UserInput = req.body;
-    const valid: Joi.ValidationResult = schemaSignup.validate(userinput);
-    if(valid.error) {
-        res.statusCode = 400;
-        return next(new Error(valid.error.details[0].message));
-    };
     if(await User.findOne({ username: userinput.username })) {
         res.statusCode = 409;
         return next(new Error('Already user with that username'));
@@ -57,19 +51,7 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction): P
         res.statusCode = 400;
         return next(new Error(valid.error.details[0].message));
     };
-    const dbUser = await User.findOne({ username: user.username })
-    if(!dbUser) {
-        res.statusCode = 404;
-        return next(new Error('No user with username'));
-    };
-    const password: string = dbUser.password;
-    const correct: boolean = await bcrypt.compare(user.password, password);
-    if(correct) {
-        getToken(user.username, res, next);
-    } else {
-        res.statusCode = 403;
-        next(new Error('Password is incorrect'));
-    };
+    if(await checkPassword(user.username, user.password, res, next)) getToken(user.username, res, next);
 });
 
 router.patch('/update', checkUser, async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -77,17 +59,7 @@ router.patch('/update', checkUser, async (req: Request, res: Response, next: Nex
     const updates: Updates = req.body;
     const password = req.body.password;
     delete updates.password;
-    const valid: Joi.ValidationResult = loginSchema.validate({ username, password });
-    if(valid.error) {
-        res.statusCode = 400;
-        return next(new Error(valid.error.details[0].message));
-    };
-    const user = await User.findOne({ username });
-    if(!user) {
-        res.statusCode = 404;
-        return next(new Error('Username not found'));
-    };
-    if(await bcrypt.compare(password, user.password)) {
+    if(await checkPassword(username, password, res, next)) {
         if(updates.newPassword) {
             updates.password = await bcrypt.hash(updates.newPassword, SALT_ROUNDS);
             delete updates.newPassword;
@@ -104,6 +76,15 @@ router.patch('/update', checkUser, async (req: Request, res: Response, next: Nex
     } else {
         res.statusCode = 403;
         return next(new Error('Password is incorrect'));
+    };
+});
+
+router.delete('/delete', checkUser, async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const username: string = req.username;
+    const password: string = req.body.password;
+    if(await checkPassword(username, password, res, next)) {
+        await User.deleteOne({ username });
+        res.status(204).end();
     };
 });
 

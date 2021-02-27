@@ -13,7 +13,6 @@ const dotenv_1 = __importDefault(require("../dotenv"));
 const functions_1 = require("../functions");
 const router = express_1.Router();
 const SALT_ROUNDS = parseInt(dotenv_1.default.SALT_ROUNDS);
-console.log(SALT_ROUNDS);
 function getToken(username, res, next) {
     jsonwebtoken_1.default.sign({ username }, dotenv_1.default.SECRET_TOKEN, {
         expiresIn: '1h'
@@ -28,12 +27,6 @@ function getToken(username, res, next) {
 ;
 router.post('/signup', async (req, res, next) => {
     const userinput = req.body;
-    const valid = schema_1.schemaSignup.validate(userinput);
-    if (valid.error) {
-        res.statusCode = 400;
-        return next(new Error(valid.error.details[0].message));
-    }
-    ;
     if (await User_1.default.findOne({ username: userinput.username })) {
         res.statusCode = 409;
         return next(new Error('Already user with that username'));
@@ -56,41 +49,15 @@ router.post('/login', async (req, res, next) => {
         return next(new Error(valid.error.details[0].message));
     }
     ;
-    const dbUser = await User_1.default.findOne({ username: user.username });
-    if (!dbUser) {
-        res.statusCode = 404;
-        return next(new Error('No user with username'));
-    }
-    ;
-    const password = dbUser.password;
-    const correct = await bcrypt_1.default.compare(user.password, password);
-    if (correct) {
+    if (await functions_1.checkPassword(user.username, user.password, res, next))
         getToken(user.username, res, next);
-    }
-    else {
-        res.statusCode = 403;
-        next(new Error('Password is incorrect'));
-    }
-    ;
 });
 router.patch('/update', functions_1.checkUser, async (req, res, next) => {
     const username = req.username;
     const updates = req.body;
     const password = req.body.password;
     delete updates.password;
-    const valid = schema_1.loginSchema.validate({ username, password });
-    if (valid.error) {
-        res.statusCode = 400;
-        return next(new Error(valid.error.details[0].message));
-    }
-    ;
-    const user = await User_1.default.findOne({ username });
-    if (!user) {
-        res.statusCode = 404;
-        return next(new Error('Username not found'));
-    }
-    ;
-    if (await bcrypt_1.default.compare(password, user.password)) {
+    if (await functions_1.checkPassword(username, password, res, next)) {
         if (updates.newPassword) {
             updates.password = await bcrypt_1.default.hash(updates.newPassword, SALT_ROUNDS);
             delete updates.newPassword;
@@ -112,6 +79,15 @@ router.patch('/update', functions_1.checkUser, async (req, res, next) => {
     else {
         res.statusCode = 403;
         return next(new Error('Password is incorrect'));
+    }
+    ;
+});
+router.delete('/delete', functions_1.checkUser, async (req, res, next) => {
+    const username = req.username;
+    const password = req.body.password;
+    if (await functions_1.checkPassword(username, password, res, next)) {
+        await User_1.default.deleteOne({ username });
+        res.status(204).end();
     }
     ;
 });
