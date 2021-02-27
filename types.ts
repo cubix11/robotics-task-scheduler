@@ -40,3 +40,10 @@ export interface SendEmailOptions {
 export interface RoomSchema extends Document {
     name: string;
 };
+
+export interface TaskInput {
+    name: string;
+    roomid: string;
+};
+
+export interface TaskSchema extends TaskInput, Document {};
