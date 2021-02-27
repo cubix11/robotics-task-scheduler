@@ -70,12 +70,22 @@ router.post('/login', async (req: Request, res: Response, next: NextFunction): P
     };
 });
 
-router.patch('/update', checkUser, async (req: Request, res: Response, next: NextFunction): void => {
+router.patch('/update', checkUser, async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const username: string = req.username;
     const updates: Updates = req.body;
     const password = req.body.password;
     delete updates.password;
     const user = await User.findOne({ username });
+    if(!user) {
+        res.statusCode = 404;
+        return next(new Error('Username not found'));
+    };
+    if(await bcrypt.compare(password, user.password)) {
+        //
+    } else {
+        res.statusCode = 403;
+        return next(new Error('Password is incorrect'));
+    };
 });
 
 export default router;
