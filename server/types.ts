@@ -47,3 +47,8 @@ export interface TaskInput {
 };
 
 export interface TaskSchema extends TaskInput, Document {};
+
+export interface NewTask {
+    name: string;
+    id: string;
+};
