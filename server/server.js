@@ -8,9 +8,13 @@ const db_1 = __importDefault(require("./db"));
 const user_1 = __importDefault(require("./routes/user"));
 const room_1 = __importDefault(require("./routes/room"));
 const tasks_1 = __importDefault(require("./routes/tasks"));
+const socket_io_1 = __importDefault(require("socket.io"));
+const http_1 = __importDefault(require("http"));
 db_1.default;
 const app = express_1.default();
 const PORT = process.env.PORT || 3000;
+const server = http_1.default.createServer(app);
+const io = socket_io_1.default(server);
 app.use(express_1.default.json());
 app.use('/user', user_1.default);
 app.use('/room', room_1.default);
@@ -26,4 +30,9 @@ function errorHandler(error, req, res, next) {
     res.json(response);
 }
 ;
-app.listen(PORT, () => console.log('Listening on port', PORT));
+// Socket events
+io.on('connection', (socket) => {
+    console.log('Client connected');
+});
+console.log('Server listening on port', PORT);
+server.listen(3000);
