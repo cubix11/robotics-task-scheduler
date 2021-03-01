@@ -44,6 +44,7 @@ router.post('/signup', async (req, res, next) => {
 });
 router.post('/login', async (req, res, next) => {
     const user = req.body;
+    console.log(user);
     const valid = schema_1.loginSchema.validate(user);
     if (valid.error) {
         res.statusCode = 400;

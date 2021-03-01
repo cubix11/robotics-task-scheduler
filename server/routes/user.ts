@@ -46,6 +46,7 @@ router.post('/signup', async (req: Request, res: Response, next: NextFunction): 
 
 router.post('/login', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const user: UserInput = req.body;
+    console.log(user)
     const valid = loginSchema.validate(user);
     if(valid.error) {
         res.statusCode = 400;

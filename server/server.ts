@@ -9,7 +9,7 @@ import path from 'path';
 import { taskSchema } from './schema';
 import Joi from 'joi';
 import Task from './models/Task';
-
+import volleyball from 'volleyball';
 db;
 const app: express.Application = express();
 const PORT: number | string = process.env.PORT || 3000;
@@ -17,10 +17,14 @@ const server: http.Server = http.createServer(app);
 const io: socketio.Namespace = socketio(server);
 
 app.use(express.json());
+app.use(volleyball);
+app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/user', userRoutes);
 app.use('/room', roomRoutes);
-app.use('/', (req: Request, res: Response): void => res.sendFile(path.join(__dirname, 'views', 'index.html')));
+app.use('/login', (req: Request, res: Response): void => res.sendFile(path.join(__dirname, 'views', 'login.html')));
+app.use('/home', (req: Request, res: Response): void => res.sendFile(path.join(__dirname, 'views', 'index.html')));
+app.use('/signup', (req: Request, res: Response): void => res.sendFile(path.join(__dirname, 'views', 'signup.html')));
 app.use(errorHandler);
 
 function errorHandler(error: Error, req: Request, res: Response, next: NextFunction) {
