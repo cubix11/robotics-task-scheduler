@@ -28,6 +28,12 @@ function getToken(username, res, next) {
 ;
 router.post('/signup', async (req, res, next) => {
     const userinput = req.body;
+    const valid = schema_1.signupSchema.validate(userinput);
+    if (valid.error) {
+        res.statusCode = 400;
+        return next(new Error(valid.error.details[0].message));
+    }
+    ;
     if (await User_1.default.findOne({ username: userinput.username })) {
         res.statusCode = 409;
         return next(new Error('Already user with that username'));
