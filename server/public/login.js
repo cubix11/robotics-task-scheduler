@@ -23,3 +23,11 @@ function setError({ response }) {
     };
     errorCard.style.display = 'block';
 };
+
+function forgot() {
+    if(!username.value) {
+        errorCard.innerHTML = 'Fill out the username first'
+        return errorCard.style.display = 'block';
+    };
+    axios.post('/user/forgot', { username: username.value }).catch(setError);
+};

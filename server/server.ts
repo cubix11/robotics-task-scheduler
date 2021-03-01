@@ -64,11 +64,6 @@ io.on('connection', (socket: socketio.Socket): void => {
         io.to(roomid).emit('edit-task', { id: newTask.id, name: newTask.name });
     });
     socket.on('delete-task', async (roomid: string, id: string): Promise<void> => {
-        const valid: Joi.ValidationResult = taskSchema.validate({ roomid, name: 'test task' });
-        if(valid.error) {
-            socket.emit('delete-task', { error: valid.error.details[0].message });
-            return;
-        };
         await Task.findByIdAndDelete(id);
         io.to(roomid).emit('delete-task', id);
     });

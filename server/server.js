@@ -66,12 +66,6 @@ io.on('connection', (socket) => {
         io.to(roomid).emit('edit-task', { id: newTask.id, name: newTask.name });
     });
     socket.on('delete-task', async (roomid, id) => {
-        const valid = schema_1.taskSchema.validate({ roomid, name: 'test task' });
-        if (valid.error) {
-            socket.emit('delete-task', { error: valid.error.details[0].message });
-            return;
-        }
-        ;
         await Task_1.default.findByIdAndDelete(id);
         io.to(roomid).emit('delete-task', id);
     });
