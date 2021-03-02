@@ -29,5 +29,9 @@ function forgot() {
         errorCard.innerHTML = 'Fill out the username first'
         return errorCard.style.display = 'block';
     };
-    axios.post('/user/forgot', { username: username.value }).then(({ data: { username } }) => localStorage.username = username).catch(setError);
+    axios.post('/user/forgot', { username: username.value }).then(({ data: { username } }) => {
+        localStorage.username = username;
+        errorCard.innerHTML = 'Email has been sent to the email associated with the username.';
+        errorCard.style.display = 'block';
+    }).catch(setError);
 };

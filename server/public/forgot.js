@@ -6,7 +6,7 @@ document.getElementById('form').addEventListener('submit', event => {
     event.preventDefault();
     errorCard.style.display = 'none';
     axios.post('/user/reset', { username: username.value, email: localStorage.username, password: password.value }).then(response => {
-        console.log(response)
+        localStorage.removeItem('username');
         errorCard.innerHTML = 'Password has been updated!';
         errorCard.style.display = 'block';
     }).catch(setError);

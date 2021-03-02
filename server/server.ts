@@ -10,12 +10,14 @@ import { taskSchema } from './schema';
 import Joi from 'joi';
 import Task from './models/Task';
 import volleyball from 'volleyball';
+import helmet from 'helmet';
 db;
 const app: express.Application = express();
 const PORT: number | string = process.env.PORT || 3000;
 const server: http.Server = http.createServer(app);
 const io: socketio.Namespace = socketio(server);
 
+app.use(helmet());
 app.use(express.json());
 app.use(volleyball);
 app.set('view engine', 'ejs');
