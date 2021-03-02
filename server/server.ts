@@ -25,6 +25,7 @@ app.use('/room', roomRoutes);
 app.use('/login', (req: Request, res: Response): void => res.sendFile(path.join(__dirname, 'views', 'login.html')));
 app.use('/home', (req: Request, res: Response): void => res.sendFile(path.join(__dirname, 'views', 'index.html')));
 app.use('/signup', (req: Request, res: Response): void => res.sendFile(path.join(__dirname, 'views', 'signup.html')));
+app.use('/reset', (req: Request, res: Response): void => res.sendFile(path.join(__dirname, 'views', 'forgot.html')));
 app.use(errorHandler);
 
 function errorHandler(error: Error, req: Request, res: Response, next: NextFunction) {
@@ -64,11 +65,6 @@ io.on('connection', (socket: socketio.Socket): void => {
         io.to(roomid).emit('edit-task', { id: newTask.id, name: newTask.name });
     });
     socket.on('delete-task', async (roomid: string, id: string): Promise<void> => {
-        const valid: Joi.ValidationResult = taskSchema.validate({ roomid, name: 'test task' });
-        if(valid.error) {
-            socket.emit('delete-task', { error: valid.error.details[0].message });
-            return;
-        };
         await Task.findByIdAndDelete(id);
         io.to(roomid).emit('delete-task', id);
     });
