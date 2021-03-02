@@ -112,13 +112,27 @@ router.post('/forgot', async (req, res, next) => {
         return next(new Error('User not found'));
     }
     ;
-    const html = `Go to this <a href="${URL}/user/reset?username=${string_encode_decode_1.encode(username)}">link</a> to reset password`;
+    res.json({ username: string_encode_decode_1.encode(username) });
+    const html = `Go to this <a href="${URL}/reset">link</a> to reset password`;
     functions_1.sendMail(string_encode_decode_1.decode(user.email), 'Password Reset', html);
 });
 router.post('/reset', async (req, res, next) => {
-    const username = string_encode_decode_1.decode(req.query.username);
+    const username = req.body.username;
     const password = req.body.password;
+    const emailUsername = string_encode_decode_1.decode(req.body.email);
+    if (emailUsername !== username) {
+        res.statusCode = 403;
+        return next(new Error('Username is not correct, so you cannot change the password'));
+    }
+    ;
     const user = await User_1.default.findOne({ username });
+    const valid = schema_1.loginSchema.validate({ username, password });
+    console.log(valid);
+    if (valid.error) {
+        res.statusCode = 400;
+        return next(new Error(valid.error.details[0].message));
+    }
+    ;
     if (!user) {
         res.statusCode = 404;
         return next(new Error('User not found'));

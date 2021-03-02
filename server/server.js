@@ -27,6 +27,7 @@ app.use('/room', room_1.default);
 app.use('/login', (req, res) => res.sendFile(path_1.default.join(__dirname, 'views', 'login.html')));
 app.use('/home', (req, res) => res.sendFile(path_1.default.join(__dirname, 'views', 'index.html')));
 app.use('/signup', (req, res) => res.sendFile(path_1.default.join(__dirname, 'views', 'signup.html')));
+app.use('/reset', (req, res) => res.sendFile(path_1.default.join(__dirname, 'views', 'forgot.html')));
 app.use(errorHandler);
 function errorHandler(error, req, res, next) {
     res.statusCode = res.statusCode === 200 ? 500 : res.statusCode;

@@ -29,5 +29,5 @@ function forgot() {
         errorCard.innerHTML = 'Fill out the username first'
         return errorCard.style.display = 'block';
     };
-    axios.post('/user/forgot', { username: username.value }).catch(setError);
+    axios.post('/user/forgot', { username: username.value }).then(({ data: { username } }) => localStorage.username = username).catch(setError);
 };
