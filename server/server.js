@@ -23,6 +23,7 @@ app.use(helmet_1.default());
 app.use(express_1.default.json());
 app.use(volleyball_1.default);
 app.set('view engine', 'ejs');
+app.use(express_1.default.static(path_1.default.join(__dirname, 'scripts')));
 app.use(express_1.default.static(path_1.default.join(__dirname, 'public')));
 app.use('/user', user_1.default);
 app.use('/room', room_1.default);
